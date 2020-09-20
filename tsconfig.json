@@ -6,5 +6,18 @@
 */
 {
   "files": [],
-  "references": []
+  "references": [
+    {
+      "path": "./projects/ng-onboarding/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/ng-onboarding/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/ng-onboarding-showcase/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/ng-onboarding-showcase/tsconfig.spec.json"
+    }
+]
 }

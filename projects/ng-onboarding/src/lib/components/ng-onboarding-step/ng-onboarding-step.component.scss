@@ -1,0 +1,160 @@
+:host {
+    .backdrop,
+    .click-blocker {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    .backdrop {
+        background: #eeeeeea3;
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        z-index: 2995;
+    }
+
+    .click-blocker {
+        z-index: 3005;
+    }
+
+    #step-by-step-global-wrapper {
+        z-index: 3010;
+        position: fixed;
+
+        .step-wrapper {
+            background: white;
+            position: fixed;
+            width: 400px;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 0px 2px 5px #00000014;
+
+            .pointer {
+                position: absolute;
+                fill: white;
+                filter: drop-shadow(0px 2px 1px #00000014);
+
+                &.up,
+                &.down {
+                    &.start {
+                        left: 20px;
+                    }
+
+                    &.middle {
+                        left: calc(50% - 20px);
+                    }
+
+                    &.end {
+                        right: 20px;
+                    }
+                }
+
+                &.up {
+                    top: -20px;
+                    transform: rotateZ(180deg);
+                }
+
+                &.down {
+                    bottom: -20px;
+                }
+
+                &.right,
+                &.left {
+                    &.start {
+                        top: 20px;
+                    }
+
+                    &.middle {
+                        top: calc(50% - 20px);
+                    }
+
+                    &.end {
+                        bottom: 20px;
+                    }
+                }
+
+                &.right {
+                    transform: rotateZ(-90deg);
+                    right: -30px;
+                }
+
+                &.left {
+                    transform: rotateZ(90deg);
+                    left: -30px;
+                }
+            }
+
+            .step-close {
+                position: absolute;
+                right: 20px;
+                width: 24px;
+                height: 24px;
+                cursor: pointer;
+            }
+
+            .step-title {
+                display: block;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .step-description {
+                display: block;
+                font-size: 16px;
+                margin-top: 15px;
+            }
+
+            .step-footer {
+                position: relative;
+                flex: 1;
+                display: flex;
+                justify-content: flex-end;
+                align-items: flex-end;
+
+                .btn {
+                    margin: 0px;
+
+                    &.skip-button {
+                        border: none;
+                        margin-right: 25px;
+                    }
+                }
+
+                .step-proguess {
+                    position: absolute;
+                    left: -20px;
+                    bottom: -20px;
+
+                    width: calc(100% + 40px);
+
+                    .step-proguess-value {
+                        position: absolute;
+                        bottom: calc(50% + 20px);
+                        left: 20px;
+                        color: #888888;
+                        font-size: 16px;
+                        line-height: 16px;
+                    }
+
+                    mat-progress-bar {
+                        height: 8px;
+
+                        .mat-progress-bar-buffer {
+                            background: #e4e4e4;
+                        }
+
+                        .mat-progress-bar-fill {
+                            &::after {
+                                background: #0076ce;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,37 @@
+<ng-container *ngIf="stepsGuideService.currentGuide && !stepsGuideService.isPaused">
+    <div class="backdrop"></div>
+    <div class="click-blocker"></div>
+
+    <div *ngIf="stepsGuideService.currentGuide && !stepsGuideService.isPaused" id="step-by-step-global-wrapper">    
+
+        <div class="step-wrapper" [style]="tooltipPosition">
+            <svg 
+                *ngIf="stepsGuideService.currentStep.pointerDirection !== 'NONE'" 
+                [class]="getPointerClass(stepsGuideService.currentStep)" 
+                width="40" 
+                height="20">
+                <polygon points="0,0 40,0 20,20" />
+            </svg>
+
+            <clr-icon class="step-close" shape="times" (click)="stepsGuideService.onGuideEnd()"></clr-icon>
+
+            <span class="step-title">{{ stepsGuideService.currentStep.stepTitle }}</span>
+            <span class="step-description">{{ stepsGuideService.currentStep.stepDescription }}</span>
+
+            <div class="step-footer">
+                <button type="button" class="btn btn-outline-primary skip-button" (click)="stepsGuideService.onGuideEnd()">
+                    SKIP GUIDE
+                </button>
+                <button type="button" class="btn btn-primary next-button" (click)="stepsGuideService.onNextStep()">
+                    {{ stepsGuideService.isLastStep() ? 'GOT IT' : 'NEXT'}}
+                </button>
+
+                <div class="step-proguess">
+                    <span class="step-proguess-value">{{ getGuideProguessSteps() }}</span>
+                    <mat-progress-bar class="step-proguess-bar" mode="determinate" [value]="getGuideProguessBarValue()">
+                    </mat-progress-bar>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
