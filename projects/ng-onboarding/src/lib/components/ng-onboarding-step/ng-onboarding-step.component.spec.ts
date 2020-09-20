@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StepByStepGuideComponent } from './ng-onboarding-step.component';
+import { NgOnboardingStep } from './ng-onboarding-step.component';
 
 describe('StepByStepGuideComponent', () => {
-  let component: StepByStepGuideComponent;
-  let fixture: ComponentFixture<StepByStepGuideComponent>;
+  let component: NgOnboardingStep;
+  let fixture: ComponentFixture<NgOnboardingStep>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StepByStepGuideComponent ]
+      declarations: [ NgOnboardingStep ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(StepByStepGuideComponent);
+    fixture = TestBed.createComponent(NgOnboardingStep);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

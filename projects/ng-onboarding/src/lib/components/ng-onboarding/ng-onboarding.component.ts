@@ -1,14 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'lib-ng-onboarding',
-  template: `
-    <p>
-      ng-onboarding works!
-    </p>
-  `,
-  styles: [
-  ]
+  selector: 'ng-onboarding',
+  template: `./ng-onboarding.component.html`,
+  styles: []
 })
 export class NgOnboardingComponent implements OnInit {
 

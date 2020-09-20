@@ -1,27 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { StepsGuideService } from 'src/app/core/service/steps-guide.service';
-import { Step } from '../../models/components/step-by-step/Step.model';
-import { debounceTime } from 'rxjs/operators';
+import { GuideProgressionService } from '../../core/guide-progression/guide-progression.service';
 
 @Component({
-  selector: 'app-step-by-step-guide',
-  templateUrl: './step-by-step-guide.component.html',
-  styleUrls: ['./step-by-step-guide.component.scss']
+  selector: 'ng-onboarding-step',
+  templateUrl: './ng-onboarding-step.component.html',
+  styleUrls: ['./ng-onboarding-step.component.scss']
 })
-export class StepByStepGuideComponent implements OnInit {
+export class NgOnboardingStep implements OnInit {
 
   public tooltipPosition: string;
 
-  constructor(public stepsGuideService: StepsGuideService) { }
+  constructor(public guideProguession: GuideProgressionService) { }
 
   ngOnInit(): void {
-    this.stepsGuideService.onStepEntered.subscribe(_ => {
-      this.tooltipPosition = this.getStepStyle();
-    })
+    // this.guideProguession.onStepEntered.subscribe(_ => {
+    //   this.tooltipPosition = this.getStepStyle();
+    // })
   }
 
   public getStepStyle(): string {
-    const [topOffset, leftOffset, bottomOffset, rigthOffset] = this.stepsGuideService.getStepTooltipPosition() || ['0px', '0px', '0px', '0px'];
+    const [topOffset, leftOffset, bottomOffset, rigthOffset] = this.guideProguession.getStepTooltipPosition() || ['0px', '0px', '0px', '0px'];
     return `
       ${topOffset ? `top: ${topOffset};` : ''}
       ${leftOffset ? `left: ${leftOffset};` : ''}

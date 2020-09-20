@@ -1,18 +1,42 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { Onboarding } from '../model/Onboarding.model';
+import { Router } from '@angular/router';
+import Configuration from '../../model/Configuration.model';
+import { Onboarding } from '../../model/Onboarding.model';
+import { QueueControllerService } from '../queue-controller/queue-controller.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NgOnboardingService {
-  private _guideQueue: Onboarding[] = [];
+  private _configuration: Configuration = new Configuration();
   private _guideRepository: Onboarding[] = [];
 
-  private onGuideAdd: Subject<Onboarding> = new Subject<Onboarding>();
+  public get configuration(): Configuration {
+    return this._configuration;
+  }
 
   public get guideRepository(): Onboarding[] {
     return this._guideRepository;
+  }
+
+  constructor(private queueController: QueueControllerService, private router: Router) {
+  }
+
+  private onActionTriggered(identifier: string, injectedData?: any) {
+    const index = this.guideRepository.findIndex(guide => guide.identifier === identifier);
+
+    if (index === -1) {
+      throw Error(`The guide with identifier ${identifier} does not exist in the onboarding guide repository`);
+    }
+
+    const onboardingGuide = this.guideRepository[index];
+    const isTriggered = this.isGuideTriggerActive(onboardingGuide, injectedData);
+
+    if (!isTriggered) {
+      throw Error(`The guide with identifier ${identifier} has a trigger that is not allowing the guide start`);
+    }
+
+    this.queueController.addGuideToQueue.next({ onboardingGuide, injectedData })
   }
 
   public addGuideToRepository(newGuide: Onboarding): Onboarding[] {
@@ -23,9 +47,16 @@ export class NgOnboardingService {
     this._guideRepository.push(newGuide);
     return this._guideRepository;
   }
-  
 
-  constructor() { }
+  public manuallyStartGuideInRepository(identifier: string, injectedData: any): void {
+    this.onActionTriggered(identifier, { ...injectedData, router: this.router });
+  }
+
+  private automaticActionTriggerCheck(): void {
+    const triggeredGuides = this.onTriggerableActionDone({ router: this.router });
+
+    triggeredGuides.forEach(triggeredGuide => this.onActionTriggered(triggeredGuide.identifier));
+  }
 
   //Method that is called when the service detected a new action that could trigger the start of one of the onboarding guides
   private onTriggerableActionDone(injectedData?: any): Onboarding[] {
@@ -34,13 +65,11 @@ export class NgOnboardingService {
     )
   }
 
-  // public onStartGuide(identifier: string): void {
-  //   if (this._guideRepository.find(guide => identifier === guide.identifier)) {
-  //     this.
-  //   }
-  // }
+  private isGuideTriggerActive(onboardingGuide: Onboarding, injectedData?: any): boolean {
+    return onboardingGuide.trigger ? onboardingGuide.trigger(injectedData) : true;
+  }
 
-  public onTriggerAction(injectedData?: any): void {
-
+  public updateConfiguration(config: Configuration): void {
+    this._configuration = { ...this._configuration, ...config };
   }
 }
