@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GuideProgressionService } from '../../core/guide-progression/guide-progression.service';
+import { Step } from '../../model/Step.model';
 
 @Component({
   selector: 'ng-onboarding-step',
@@ -9,17 +10,22 @@ import { GuideProgressionService } from '../../core/guide-progression/guide-prog
 export class NgOnboardingStep implements OnInit {
 
   public tooltipPosition: string;
+  public pointerClass: string;
+  public proguessReport: { steps: string, percentage: number };
 
   constructor(public guideProguession: GuideProgressionService) { }
 
   ngOnInit(): void {
-    // this.guideProguession.onStepEntered.subscribe(_ => {
-    //   this.tooltipPosition = this.getStepStyle();
-    // })
+    this.guideProguession.onPositionUpdate.subscribe(position => {
+      this.tooltipPosition = this.getStepStyle(position);
+      this.pointerClass = this.getPointerClass(this.guideProguession.currentStep);
+
+      this.proguessReport = this.guideProguession.getGuideProguessValues();
+    })
   }
 
-  public getStepStyle(): string {
-    const [topOffset, leftOffset, bottomOffset, rigthOffset] = this.guideProguession.getStepTooltipPosition() || ['0px', '0px', '0px', '0px'];
+  public getStepStyle(positionArray: string[]): string {
+    const [topOffset, leftOffset, bottomOffset, rigthOffset] = positionArray;
     return `
       ${topOffset ? `top: ${topOffset};` : ''}
       ${leftOffset ? `left: ${leftOffset};` : ''}
@@ -29,19 +35,7 @@ export class NgOnboardingStep implements OnInit {
   }
 
   public getPointerClass(step: Step): string {
-    return `pointer ${step.pointerDirection?.toLowerCase()} ${step.pointerLocation?.toLowerCase()}`;
-  }
-
-  public getGuideProguessBarValue(): number {
-    const index = this.stepsGuideService.currentGuide.steps.findIndex(step => step === this.stepsGuideService.currentStep);
-
-    return ((index + 1) / this.stepsGuideService.currentGuide.steps.length) * 100;
-  }
-
-  public getGuideProguessSteps(): string {
-    const index = this.stepsGuideService.getCurrentStepIndex();
-
-    return `${index + 1} of ${this.stepsGuideService.currentGuide.steps.length}`;
+    return `pointer ${step.pointer.direction?.toLowerCase()} ${step.pointer.location?.toLowerCase()}`;
   }
 
 }

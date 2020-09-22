@@ -36,7 +36,7 @@ export class NgOnboardingService {
       throw Error(`The guide with identifier ${identifier} has a trigger that is not allowing the guide start`);
     }
 
-    this.queueController.addGuideToQueue.next({ onboardingGuide, injectedData })
+    this.queueController.addGuideToQueue.next({ onboarding: onboardingGuide, injectedData })
   }
 
   public addGuideToRepository(newGuide: Onboarding): Onboarding[] {
