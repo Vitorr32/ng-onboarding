@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
+import { async } from 'rxjs/internal/scheduler/async';
 import Guide from '../../model/Guide.model';
 import { Onboarding } from '../../model/Onboarding.model';
 import { Step } from '../../model/Step.model';
@@ -47,26 +48,30 @@ export class GuideProgressionService implements OnDestroy {
     this.currentGuide = guide;
     this.currentOnboarding = guide.onboarding;
     this.injectedData = guide.injectedData;
-    this.currentStep = guide.onboarding.steps[0];
 
     this.onNextStep();
   }
 
-  private onNextStep(): Step {
+  public async onNextStep(): Promise<Step> {
     const indexOfCurrentStep = this.currentOnboarding.steps.findIndex(step => step === this.currentStep);
     if (indexOfCurrentStep === this.currentOnboarding.steps.length - 1) {
-      this.onEndGuide();
+      this.onGuideEnd();
     }
 
     const nextStep = this.currentOnboarding.steps[indexOfCurrentStep + 1];
 
     this.onStepEntry(nextStep, this.currentStep);
+    const readyToContinue = await this.onAsyncStep(nextStep);
 
-    this.currentStep = nextStep;
-    return nextStep;
+    if (readyToContinue) {
+      this.currentStep = nextStep;
+      return nextStep;
+    } else {
+      return null;
+    }
   }
 
-  private onEndGuide(): void {
+  public onGuideEnd(): void {
     if (this.currentStep.stepExit) {
       this.currentStep.stepExit(this.injectedData);
     }
@@ -87,6 +92,52 @@ export class GuideProgressionService implements OnDestroy {
     if (nextStep.stepEntry) {
       nextStep.stepEntry(this.injectedData);
     }
+  }
+
+  private onAsyncStep(step: Step): Promise<boolean> {
+    return new Promise((resolve) => {
+      //If step is not asynchronous, resolve immediately
+      if (!step.asyncStep) { resolve(true); }
+
+      const asyncConfiguration = step.asyncStep;
+
+      //If the step has a subject to be listened, subscribe to it and when the value is truthy, resolve wrapping promise
+      if (asyncConfiguration.subjectToListen) {
+        const subscription = asyncConfiguration.subjectToListen.subscribe((isRendered) => {
+          if (isRendered) {
+            resolve(isRendered);
+            subscription.unsubscribe();
+          }
+        })
+
+      } else {
+        //Else, just wait for the highlighted tag/id to be rendered
+
+        const maxRetrys = asyncConfiguration.retryDuration || 10;
+        const tooltipAnchor = step.tooltipAnchor;
+        let currentTries = 0;
+
+        const retryIntervalID = setInterval(() => {
+          const anchorElement: HTMLElement = tooltipAnchor.anchorId
+            ? document.getElementById(tooltipAnchor.anchorId)
+            : (document.getElementsByTagName(tooltipAnchor.anchorTagName)[0] as HTMLElement);
+
+          if (anchorElement) {
+            resolve(true);
+            clearInterval(retryIntervalID);
+          } else {
+            if (currentTries >= maxRetrys) {
+              this.onGuideEnd();
+              resolve(false);
+              clearInterval(retryIntervalID);
+              throw new Error(`Anchor element has not rendered after ${currentTries} tries, aborting guide...`);
+            }
+            currentTries++;
+          }
+        }, 1000)
+
+      }
+    })
   }
 
   public getGuideProguessValues(): { steps: string, percentage: number } {

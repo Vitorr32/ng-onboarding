@@ -10,6 +10,7 @@ import { Step } from '../../model/Step.model';
 export class NgOnboardingStep implements OnInit {
 
   public tooltipPosition: string;
+  public hasPointer: boolean;
   public pointerClass: string;
   public proguessReport: { steps: string, percentage: number };
 
@@ -19,12 +20,12 @@ export class NgOnboardingStep implements OnInit {
     this.guideProguession.onPositionUpdate.subscribe(position => {
       this.tooltipPosition = this.getStepStyle(position);
       this.pointerClass = this.getPointerClass(this.guideProguession.currentStep);
-
+      this.hasPointer = this.hasPonter(this.guideProguession.currentStep);
       this.proguessReport = this.guideProguession.getGuideProguessValues();
     })
   }
 
-  public getStepStyle(positionArray: string[]): string {
+  private getStepStyle(positionArray: string[]): string {
     const [topOffset, leftOffset, bottomOffset, rigthOffset] = positionArray;
     return `
       ${topOffset ? `top: ${topOffset};` : ''}
@@ -34,8 +35,12 @@ export class NgOnboardingStep implements OnInit {
     `;
   }
 
-  public getPointerClass(step: Step): string {
+  private getPointerClass(step: Step): string {
     return `pointer ${step.pointer.direction?.toLowerCase()} ${step.pointer.location?.toLowerCase()}`;
+  }
+
+  private hasPonter(step: Step): boolean {
+    return step.pointer.direction !== 'NONE';
   }
 
 }

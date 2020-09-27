@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NgOnboardingService } from 'projects/ng-onboarding/src/lib/core/ng-onboarding/ng-onboarding.service';
+import ShowCaseRepository from '../respository/ShowcaseRepository';
 
 @Component({
   selector: 'app-root',
@@ -8,13 +8,9 @@ import { NgOnboardingService } from 'projects/ng-onboarding/src/lib/core/ng-onbo
 })
 export class AppComponent {
   title = 'ng-onboarding-showcase';
+  public showcaseRepository = ShowCaseRepository();
 
-  constructor(private onboardingService: NgOnboardingService) {
-    onboardingService.addGuideToRepository({
-      identifier: 'Yolo',
-      steps: [],
-      trigger: () => true
-    })
+  constructor() {
   }
 
   public onShowcaseStart(): void {

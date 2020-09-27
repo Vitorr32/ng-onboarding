@@ -5,5 +5,5 @@ export class Onboarding {
     steps: Step[];
     skippable?: boolean = true;
     completed?: boolean = false;
-    trigger: (injectedData: any) => boolean;
+    trigger?: (injectedData: any) => boolean;
 }

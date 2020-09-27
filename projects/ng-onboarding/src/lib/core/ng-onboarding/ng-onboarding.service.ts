@@ -61,16 +61,16 @@ export class NgOnboardingService {
     this.onActionTriggered(identifier, { ...injectedData, router: this.router });
   }
 
-  private automaticActionTriggerCheck(): void {
-    const triggeredGuides = this.onTriggerableActionDone({ router: this.router });
+  // private automaticActionTriggerCheck(): void {
+  //   const triggeredGuides = this.onTriggerableActionDone({ router: this.router });
 
-    triggeredGuides.forEach(triggeredGuide => this.onActionTriggered(triggeredGuide.identifier));
-  }
+  //   triggeredGuides.forEach(triggeredGuide => this.onActionTriggered(triggeredGuide.identifier));
+  // }
 
   //Method that is called when the service detected a new action that could trigger the start of one of the onboarding guides
   private onTriggerableActionDone(injectedData?: any): Onboarding[] {
     return this.guideRepository.filter(
-      (onboardingGuide: Onboarding) => onboardingGuide.trigger(injectedData)
+      (onboardingGuide: Onboarding) => this.isGuideTriggerActive(onboardingGuide, injectedData)
     )
   }
 

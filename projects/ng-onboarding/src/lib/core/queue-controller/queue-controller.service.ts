@@ -24,7 +24,7 @@ export class QueueControllerService implements OnDestroy {
 
   private setListernerForAddToQueueRequest(): void {
     this.addGuideToQueueSubscription = this.addGuideToQueue.subscribe(newGuide => {
-      if (this._guideQueue.find(guide => guide.onboarding.identifier === newGuide.onboarding.identifier)) {
+      if (!this._guideQueue.find(guide => guide.onboarding.identifier === newGuide.onboarding.identifier)) {
         this._guideQueue.push(newGuide);
 
         this.tryToStartGuide();
@@ -56,6 +56,12 @@ export class QueueControllerService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.addGuideToQueueSubscription.unsubscribe();
+    if (this.addGuideToQueueSubscription) {
+      this.addGuideToQueueSubscription.unsubscribe();
+    }
+
+    if (this.onGuideCompletedSubscription) {
+      this.onGuideCompletedSubscription.unsubscribe();
+    }
   }
 }

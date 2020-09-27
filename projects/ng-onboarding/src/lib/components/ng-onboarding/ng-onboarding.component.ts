@@ -1,17 +1,20 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { GuideProgressionService } from '../../core/guide-progression/guide-progression.service';
 import { NgOnboardingService } from '../../core/ng-onboarding/ng-onboarding.service';
+import Configuration from '../../model/Configuration.model';
 import { Onboarding } from '../../model/Onboarding.model';
-import { Step } from '../../model/Step.model';
 
 @Component({
   selector: 'ng-onboarding',
   templateUrl: `./ng-onboarding.component.html`,
-  styles: []
+  styleUrls: ['./ng-onboarding.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class NgOnboardingComponent implements OnInit {
   @Input()
   repository: Onboarding[] | Onboarding;
+  @Input()
+  configuration?: Configuration;
 
   constructor(private onboardingService: NgOnboardingService, private guideProguession: GuideProgressionService) { }
 
@@ -25,6 +28,13 @@ export class NgOnboardingComponent implements OnInit {
     } else {
       this.onboardingService.directStartGuide(this.repository);
     }
+
+    if (this.configuration) {
+      this.onboardingService.updateConfiguration(this.configuration);
+    }
   }
 
+  public isGuideInProguess(): boolean {
+    return this.guideProguession.currentStep && !this.guideProguession.isPaused;
+  }
 }

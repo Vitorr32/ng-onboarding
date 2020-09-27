@@ -1,34 +1,31 @@
-<ng-container *ngIf="stepsGuideService.currentGuide && !stepsGuideService.isPaused">
+<ng-container>
     <div class="backdrop"></div>
     <div class="click-blocker"></div>
 
-    <div *ngIf="stepsGuideService.currentGuide && !stepsGuideService.isPaused" id="step-by-step-global-wrapper">    
-
+    <div id="ng-onboarding-step">
         <div class="step-wrapper" [style]="tooltipPosition">
-            <svg 
-                *ngIf="stepsGuideService.currentStep.pointerDirection !== 'NONE'" 
-                [class]="getPointerClass(stepsGuideService.currentStep)" 
-                width="40" 
-                height="20">
+            <svg *ngIf="hasPointer" [class]="pointerClass" width="40" height="20">
                 <polygon points="0,0 40,0 20,20" />
             </svg>
 
-            <clr-icon class="step-close" shape="times" (click)="stepsGuideService.onGuideEnd()"></clr-icon>
+            <mat-icon aria-hidden="false" aria-label="Example home icon" (click)="guideProguession.onGuideEnd()">home
+            </mat-icon>
 
-            <span class="step-title">{{ stepsGuideService.currentStep.stepTitle }}</span>
-            <span class="step-description">{{ stepsGuideService.currentStep.stepDescription }}</span>
+            <span class="step-title">{{ guideProguession.currentStep.stepTitle }}</span>
+            <span class="step-description">{{ guideProguession.currentStep.stepDescription }}</span>
 
             <div class="step-footer">
-                <button type="button" class="btn btn-outline-primary skip-button" (click)="stepsGuideService.onGuideEnd()">
+                <button type="button" class="btn btn-outline-primary skip-button"
+                    (click)="guideProguession.onGuideEnd()">
                     SKIP GUIDE
                 </button>
-                <button type="button" class="btn btn-primary next-button" (click)="stepsGuideService.onNextStep()">
-                    {{ stepsGuideService.isLastStep() ? 'GOT IT' : 'NEXT'}}
+                <button type="button" class="btn btn-primary next-button" (click)="guideProguession.onNextStep()">
+                    {{ proguessReport.percentage === 100 ? 'GOT IT' : 'NEXT'}}
                 </button>
 
                 <div class="step-proguess">
-                    <span class="step-proguess-value">{{ getGuideProguessSteps() }}</span>
-                    <mat-progress-bar class="step-proguess-bar" mode="determinate" [value]="getGuideProguessBarValue()">
+                    <span class="step-proguess-value">{{ proguessReport.steps }}</span>
+                    <mat-progress-bar class="step-proguess-bar" mode="determinate" [value]="proguessReport.percentage">
                     </mat-progress-bar>
                 </div>
             </div>

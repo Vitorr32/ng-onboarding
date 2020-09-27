@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export class Step {
     stepTitle: string;
@@ -19,6 +19,8 @@ export class Step {
         location?: 'START' | 'MIDDLE' | 'END';
     };
     asyncStep?: {
-        actionsToListen: string[]
+        blockActionsWhilePaused?: boolean;
+        retryDuration?: number;
+        subjectToListen?: Subject<boolean>;
     };
 }
