@@ -48,6 +48,15 @@ export class NgOnboardingService {
     return this._guideRepository;
   }
 
+  public directStartGuide(newGuide: Onboarding, injectedData?: any): void {
+    if (this.queueController._isActive) {
+      throw new Error(`Can't direct start new guide while another is currently running`);
+    }
+
+    this.addGuideToRepository(newGuide);
+    this.manuallyStartGuideInRepository(newGuide.identifier, injectedData);
+  }
+
   public manuallyStartGuideInRepository(identifier: string, injectedData: any): void {
     this.onActionTriggered(identifier, { ...injectedData, router: this.router });
   }

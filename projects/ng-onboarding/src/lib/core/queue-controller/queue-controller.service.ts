@@ -7,6 +7,7 @@ import Guide from '../../model/Guide.model';
 })
 export class QueueControllerService implements OnDestroy {
   private _guideQueue: Guide[] = [];
+  public _isActive: boolean = false;
 
   public addGuideToQueue: Subject<Guide> = new Subject<Guide>();
   private addGuideToQueueSubscription: Subscription;
@@ -26,7 +27,7 @@ export class QueueControllerService implements OnDestroy {
       if (this._guideQueue.find(guide => guide.onboarding.identifier === newGuide.onboarding.identifier)) {
         this._guideQueue.push(newGuide);
 
-        this.tryToStartGuide(newGuide);
+        this.tryToStartGuide();
       }
     });
   }
@@ -36,14 +37,17 @@ export class QueueControllerService implements OnDestroy {
       this._guideQueue.splice(0, 1);
 
       if (!this.isQueueEmpty()) {
-        this.tryToStartGuide(this._guideQueue[0]);
+        this.tryToStartGuide();
       }
     })
   }
 
-  private tryToStartGuide(guide: Guide): void {
+  private tryToStartGuide(): void {
     if (!this.isQueueEmpty()) {
-      this.onGuideStart.next(guide);
+      this._isActive = true;
+      this.onGuideStart.next(this._guideQueue[0]);
+    } else {
+      this._isActive = false;
     }
   }
 
