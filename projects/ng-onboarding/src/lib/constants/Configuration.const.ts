@@ -5,5 +5,5 @@ export const BACKDROP_COLOR: string = ' #eeeeeea3';
 export const TOOLTIP_DIMENSIONS: TooltipDimensions = {
     width: 400,
     height: 240,
-    arrowRadius: 20
+    _arrowRadius: 20
 };

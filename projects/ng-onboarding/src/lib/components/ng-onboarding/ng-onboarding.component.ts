@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChange, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { GuideProgressionService } from '../../core/guide-progression/guide-progression.service';
 import { NgOnboardingService } from '../../core/ng-onboarding/ng-onboarding.service';
 import Configuration from '../../model/Configuration.model';
@@ -10,15 +10,23 @@ import { Onboarding } from '../../model/Onboarding.model';
   styleUrls: ['./ng-onboarding.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class NgOnboardingComponent implements OnInit {
+export class NgOnboardingComponent implements OnInit, OnChanges {
   @Input()
   repository: Onboarding[] | Onboarding;
+  @Input()
+  injectedData?: any;
+  @Input()
+  width?: number;
+  @Input()
+  height?: number;
   @Input()
   configuration?: Configuration;
 
   constructor(private onboardingService: NgOnboardingService, private guideProguession: GuideProgressionService) { }
 
   ngOnInit(): void {
+
+    console.log(this.injectedData);
     if (!this.repository) {
       throw new Error('Ng onboarding intialized with no values in the repository input');
     }
@@ -26,7 +34,7 @@ export class NgOnboardingComponent implements OnInit {
     if (Array.isArray(this.repository)) {
       this.repository.forEach(guide => this.onboardingService.addGuideToRepository(guide));
     } else {
-      this.onboardingService.directStartGuide(this.repository);
+      this.onboardingService.directStartGuide(this.repository, this.injectedData);
     }
 
     if (this.configuration) {
@@ -34,7 +42,7 @@ export class NgOnboardingComponent implements OnInit {
     }
   }
 
-  public isGuideInProguess(): boolean {
-    return this.guideProguession.currentStep && !this.guideProguession.isPaused;
+  ngOnChanges(changes: SimpleChanges) {
   }
+
 }

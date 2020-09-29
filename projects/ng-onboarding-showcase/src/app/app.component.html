@@ -5,11 +5,13 @@
 
   <button> Click here to start a Onboarding guide</button>
 
-  <ng-onboarding [repository]="showcaseRepository"></ng-onboarding>
+  <ng-onboarding [repository]="showcaseRepository" [injectedData]="toInjectData"></ng-onboarding>
 
   <div class="anchor" id="anchor1" style="top: 0px;right: 0px;">
 
   </div>
+
+  <div *ngIf="shouldRenderAnchorOfStep2" class="anchor" id="step2-anchor" style="right: 10px; bottom: 10px;"></div>
 
 
 </main>

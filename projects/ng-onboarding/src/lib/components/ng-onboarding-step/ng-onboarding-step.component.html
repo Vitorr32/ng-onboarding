@@ -1,18 +1,22 @@
-<ng-container>
+<ng-container *ngIf="!guideProguession.isPaused && guideProguession.currentStep">
     <div class="backdrop"></div>
     <div class="click-blocker"></div>
 
     <div id="ng-onboarding-step">
-        <div class="step-wrapper" [style]="tooltipPosition">
+        <div class="step-wrapper" [style]="tooltipWrapperStyles">
             <svg *ngIf="hasPointer" [class]="pointerClass" width="40" height="20">
                 <polygon points="0,0 40,0 20,20" />
             </svg>
 
-            <mat-icon aria-hidden="false" aria-label="Example home icon" (click)="guideProguession.onGuideEnd()">home
-            </mat-icon>
+            <svg (click)="guideProguession.onGuideEnd()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                fill="black" width="18px" height="18px">
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path
+                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
 
-            <span class="step-title">{{ guideProguession.currentStep.stepTitle }}</span>
-            <span class="step-description">{{ guideProguession.currentStep.stepDescription }}</span>
+            <span class="step-title">{{ currentStep.stepTitle }}</span>
+            <span class="step-description">{{ currentStep.stepDescription }}</span>
 
             <div class="step-footer">
                 <button type="button" class="btn btn-outline-primary skip-button"

@@ -1,9 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { async } from 'rxjs/internal/scheduler/async';
 import Guide from '../../model/Guide.model';
 import { Onboarding } from '../../model/Onboarding.model';
 import { Step } from '../../model/Step.model';
+import { StepRender } from '../../model/StepRender.model';
 import { NgOnboardingService } from '../ng-onboarding/ng-onboarding.service';
 import { QueueControllerService } from '../queue-controller/queue-controller.service';
 
@@ -18,29 +18,18 @@ export class GuideProgressionService implements OnDestroy {
   public currentStep: Step;
   public isPaused: boolean;
 
-  public onPositionUpdate: Subject<string[]> = new Subject<string[]>();
-
+  public onStepReady: Subject<StepRender> = new Subject<StepRender>();
   private onElementFound: Subject<HTMLElement> = new Subject<HTMLElement>();
-  private onElementFoundSubscription: Subscription;
 
   private onGuideStartSubscription: Subscription;
 
-
   constructor(private queueControllerService: QueueControllerService, private onboardingService: NgOnboardingService) {
     this.listenToGuideStartSubject();
-    this.listenToElementFoundSubject();
   }
 
   private listenToGuideStartSubject() {
     this.onGuideStartSubscription = this.queueControllerService.onGuideStart.subscribe(guide => {
       this.initializeGuide(guide);
-    })
-  }
-
-  private listenToElementFoundSubject() {
-    this.onElementFoundSubscription = this.onElementFound.subscribe(element => {
-      const updatedPosition = this.getTooltipPositionFromHTMLElement(element, this.currentStep);
-      this.onPositionUpdate.next(updatedPosition);
     })
   }
 
@@ -53,6 +42,7 @@ export class GuideProgressionService implements OnDestroy {
   }
 
   public async onNextStep(): Promise<Step> {
+    console.log("On next step");
     const indexOfCurrentStep = this.currentOnboarding.steps.findIndex(step => step === this.currentStep);
     if (indexOfCurrentStep === this.currentOnboarding.steps.length - 1) {
       this.onGuideEnd();
@@ -60,11 +50,16 @@ export class GuideProgressionService implements OnDestroy {
 
     const nextStep = this.currentOnboarding.steps[indexOfCurrentStep + 1];
 
+    console.log("Next step is...", nextStep);
+
     this.onStepEntry(nextStep, this.currentStep);
+    console.log("Waiting for async step...");
     const readyToContinue = await this.onAsyncStep(nextStep);
+    console.log("Waiting for step done! result was: " + readyToContinue)
 
     if (readyToContinue) {
       this.currentStep = nextStep;
+      this.onStepReadyToBeRendered(this.currentStep);
       return nextStep;
     } else {
       return null;
@@ -111,58 +106,61 @@ export class GuideProgressionService implements OnDestroy {
         })
 
       } else {
-        //Else, just wait for the highlighted tag/id to be rendered
+        //Else, just wait for the anchor element tag/id to be rendered
 
-        const maxRetrys = asyncConfiguration.retryDuration || 10;
+        const maximumWaitTimeMS = asyncConfiguration.maximumWaitTimeInMilliseconds || 10000;
         const tooltipAnchor = step.tooltipAnchor;
-        let currentTries = 0;
 
-        const retryIntervalID = setInterval(() => {
-          const anchorElement: HTMLElement = tooltipAnchor.anchorId
-            ? document.getElementById(tooltipAnchor.anchorId)
-            : (document.getElementsByTagName(tooltipAnchor.anchorTagName)[0] as HTMLElement);
+        this.waitForElementToRender(tooltipAnchor.anchorTagName, tooltipAnchor.anchorId);
 
-          if (anchorElement) {
-            resolve(true);
-            clearInterval(retryIntervalID);
-          } else {
-            if (currentTries >= maxRetrys) {
-              this.onGuideEnd();
-              resolve(false);
-              clearInterval(retryIntervalID);
-              throw new Error(`Anchor element has not rendered after ${currentTries} tries, aborting guide...`);
-            }
-            currentTries++;
-          }
-        }, 1000)
+        let subscription: Subscription;
+        let timeout: number;
 
+        timeout = setTimeout(() => {
+          subscription.unsubscribe();
+          resolve(false);
+          throw new Error(`After ${maximumWaitTimeMS / 1000} second(s), the anchor element was still not rendered, aborting the guide`);
+        }, maximumWaitTimeMS);
+
+        subscription = this.onElementFound.subscribe(_ => {
+          subscription.unsubscribe();
+          clearTimeout(timeout);
+          resolve(true);
+        })
       }
     })
   }
 
-  public getGuideProguessValues(): { steps: string, percentage: number } {
-    const index = this.currentOnboarding.steps.findIndex(step => step === this.currentStep);
+  private onStepReadyToBeRendered(step: Step) {
+    const absolutePosition = this.getStepTooltipPosition(step);
+    const guideProguess = this.getGuideProguessValues(step, this.currentOnboarding.steps);
+
+    this.onStepReady.next({
+      position: absolutePosition,
+      proguess: guideProguess,
+      step
+    })
+  }
+
+  private getGuideProguessValues(currentStep: Step, totalSteps: Step[]): { steps: string, percentage: number } {
+    const index = totalSteps.findIndex(step => step === currentStep);
 
     return {
-      steps: `${index + 1} of ${this.currentOnboarding.steps.length}`,
-      percentage: ((index + 1) / this.currentOnboarding.steps.length) * 100
+      steps: `${index + 1} of ${totalSteps.length}`,
+      percentage: ((index + 1) / totalSteps.length) * 100
     };
   }
 
-  public getStepTooltipPosition(): string[] {
-    const tooltipAnchor = this.currentStep.tooltipAnchor;
+  private getStepTooltipPosition(step: Step): string[] {
+    const tooltipAnchor = step.tooltipAnchor;
     if (tooltipAnchor.absolutePosition) {
-      return this.currentStep.tooltipAnchor.absolutePosition;
+      return step.tooltipAnchor.absolutePosition;
     } else if (tooltipAnchor.anchorTagName || tooltipAnchor.anchorId) {
       const anchorElement: HTMLElement = tooltipAnchor.anchorId
         ? document.getElementById(tooltipAnchor.anchorId)
         : (document.getElementsByTagName(tooltipAnchor.anchorTagName)[0] as HTMLElement);
 
-      if (anchorElement) {
-        this.onElementFound.next(anchorElement);
-      } else {
-        this.waitForElementToRender(tooltipAnchor.anchorTagName, tooltipAnchor.anchorId);
-      }
+      return this.getTooltipPositionFromHTMLElement(anchorElement, step);
     } else {
       throw new Error('The tooltip anchor configuration has no specific anchor or position declared');
     }
@@ -172,7 +170,7 @@ export class GuideProgressionService implements OnDestroy {
     const tooltipAnchor = step.tooltipAnchor;
     const elementBoundingRect: DOMRect = element.getBoundingClientRect();
     const rawPosition: number[] = [elementBoundingRect.top, elementBoundingRect.left];
-    const { width, height, arrowRadius } = this.onboardingService.configuration.tooltipDimensions;
+    const { width, height, _arrowRadius: arrowRadius } = this.onboardingService.configuration.tooltipDimensions;
     let { direction, location } = step.pointer;
 
     const hasHorizontalOverflow: boolean = elementBoundingRect.left + width + arrowRadius > window.innerWidth;
@@ -209,7 +207,7 @@ export class GuideProgressionService implements OnDestroy {
   }
 
   private waitForElementToRender(tagName?: string, id?: string): void {
-    const mutationObserver = new MutationObserver((mutations, observer) => {
+    const mutationObserver = new MutationObserver((_, observer) => {
 
       const anchorElement: HTMLElement = id ? document.getElementById(id) : (document.getElementsByTagName(tagName)[0] as HTMLElement);
       if (anchorElement) {
@@ -224,6 +222,5 @@ export class GuideProgressionService implements OnDestroy {
 
   ngOnDestroy() {
     this.onGuideStartSubscription.unsubscribe();
-    this.onElementFoundSubscription.unsubscribe();
   }
 }

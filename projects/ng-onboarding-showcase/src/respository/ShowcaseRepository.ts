@@ -10,7 +10,19 @@ const ShowCaseRepository = (): Onboarding => ({
                 direction: 'NONE',
             },
             tooltipAnchor: {
-                absolutePosition: ['calc(50% - 50%)', 'calc(50% - 50%)']
+                absolutePosition: ['calc(50% - 200px)', 'calc(50% - 200px)']
+            }
+        },
+        {
+            stepTitle: 'Saw that? Asynchronous support!',
+            stepDescription: ` You can define asynchronous support for each different step so that the Ng Onboarding waits
+            for the anchor element or subject to be done, making it easy to continue the guide after a call for API or similar is done`,
+            tooltipAnchor: {
+                anchorId: 'step2-anchor'
+            },
+            asyncStep: {
+                blockActionsWhilePaused: true,
+                maximumWaitTimeInMilliseconds: 10000
             }
         }
     ],

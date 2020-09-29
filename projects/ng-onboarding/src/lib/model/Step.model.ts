@@ -1,6 +1,7 @@
 import { Observable, Subject } from 'rxjs';
 
 export class Step {
+    stepIdentifier?: string;
     stepTitle: string;
     stepDescription: string;
     customClass?: string;
@@ -14,13 +15,13 @@ export class Step {
         anchorId?: string;
         offsetFromAnchor?: number[];
     };
-    pointer: {
+    pointer?: {
         direction: 'NONE' | 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
         location?: 'START' | 'MIDDLE' | 'END';
     };
     asyncStep?: {
         blockActionsWhilePaused?: boolean;
-        retryDuration?: number;
+        maximumWaitTimeInMilliseconds?: number;
         subjectToListen?: Subject<boolean>;
     };
 }

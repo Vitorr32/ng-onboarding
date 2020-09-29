@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { NgOnboardingModule } from '../../../ng-onboarding/src/lib/ng-onboarding.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -11,6 +12,7 @@ import { AppComponent } from './app.component';
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     NgOnboardingModule
   ],
