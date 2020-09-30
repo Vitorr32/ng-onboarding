@@ -52,9 +52,10 @@ export class GuideProgressionService implements OnDestroy {
 
     console.log("Next step is...", nextStep);
 
-    this.onStepEntry(nextStep, this.currentStep);
+    await this.onStepEntry(nextStep, this.currentStep);
     console.log("Waiting for async step...");
     const readyToContinue = await this.onAsyncStep(nextStep);
+    this.isPaused = false;
     console.log("Waiting for step done! result was: " + readyToContinue)
 
     if (readyToContinue) {
@@ -79,20 +80,24 @@ export class GuideProgressionService implements OnDestroy {
     this.currentStep = null;
   }
 
-  private onStepEntry(nextStep: Step, previousStep?: Step): void {
+  private async onStepEntry(nextStep: Step, previousStep?: Step): Promise<boolean> {
     if (previousStep && previousStep.stepExit) {
-      previousStep.stepExit(this.injectedData);
+      await previousStep.stepExit(this.injectedData);
     }
 
     if (nextStep.stepEntry) {
-      nextStep.stepEntry(this.injectedData);
+      await nextStep.stepEntry(this.injectedData);
     }
+
+    return true;
   }
 
   private onAsyncStep(step: Step): Promise<boolean> {
     return new Promise((resolve) => {
       //If step is not asynchronous, resolve immediately
       if (!step.asyncStep) { resolve(true); }
+
+      this.isPaused = true;
 
       const asyncConfiguration = step.asyncStep;
 

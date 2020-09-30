@@ -11,6 +11,7 @@ export class AppComponent implements OnInit {
   title = 'ng-onboarding-showcase';
   public showcaseRepository = ShowCaseRepository();
 
+  public currentStepToShow: string = '';
   public shouldRenderAnchorOfStep2: boolean = false;
 
   public toInjectData: any;
@@ -24,9 +25,10 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.setInjectedDataToGuide();
 
-    this.subjectToBeWaited.subscribe((stepId?: string) => {
-      switch (stepId) {
-
+    this.subjectToBeWaited.subscribe((stepExitCommand?: string) => {
+      switch (stepExitCommand) {
+        case 'step1exit':
+          this.onShowAsyncStepAnchor();
       }
     });
   }
@@ -39,5 +41,13 @@ export class AppComponent implements OnInit {
 
   public onShowcaseStart(): void {
 
+  }
+
+  private onShowAsyncStepAnchor() {
+    setTimeout(() => this.shouldRenderAnchorOfStep2 = true, 5000);
+  }
+
+  public shouldAddShowClassForAnchorDiv(anchorId: string): string {
+    return `anchor-message ${anchorId === this.currentStepToShow ? 'reveal' : ''}`;
   }
 }

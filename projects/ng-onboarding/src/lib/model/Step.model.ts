@@ -7,8 +7,8 @@ export class Step {
     customClass?: string;
     stepHighlightedIds?: string[];
     stepHighlightedTags?: string[];
-    stepEntry?: (data: any) => Observable<any>;
-    stepExit?: (data: any) => Observable<any>;
+    stepEntry?: (data: any) => Promise<any>;
+    stepExit?: (data: any) => Promise<any>;
     tooltipAnchor: {
         absolutePosition?: string[];
         anchorTagName?: string;

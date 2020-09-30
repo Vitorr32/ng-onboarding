@@ -68,7 +68,8 @@
               "projects/ng-onboarding-showcase/src/assets"
             ],
             "styles": [
-              "projects/ng-onboarding-showcase/src/styles.scss"
+              "projects/ng-onboarding-showcase/src/styles.scss",
+              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
             ],
             "scripts": []
           },

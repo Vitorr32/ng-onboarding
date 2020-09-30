@@ -1,4 +1,5 @@
 import { Onboarding } from '../../../ng-onboarding/src/lib/model/Onboarding.model';
+import { InjectedData } from '../model/InjectedData.model';
 
 const ShowCaseRepository = (): Onboarding => ({
     identifier: 'showcase-guide',
@@ -11,6 +12,9 @@ const ShowCaseRepository = (): Onboarding => ({
             },
             tooltipAnchor: {
                 absolutePosition: ['calc(50% - 200px)', 'calc(50% - 200px)']
+            },
+            stepExit: async (injectedData: InjectedData) => {
+                injectedData.onStepExitSubject.next('step1exit')
             }
         },
         {
