@@ -14,7 +14,28 @@ const ShowCaseRepository = (): Onboarding => ({
                 absolutePosition: ['calc(50% - 200px)', 'calc(50% - 200px)']
             },
             stepExit: async (injectedData: InjectedData) => {
-                injectedData.onStepExitSubject.next('step1exit')
+                injectedData.onStepExitSubject.next('anchor-2')
+            }
+        },
+        {
+            stepTitle: 'Automatic Anchoring 1',
+            stepDescription: `Starting by the automatic anchor feature, the NgOnboarding allow you to just assing a specific tag name or
+            id of a HTML element, then the onboarding tooltip will anchor automatically.
+
+            The library will try to fit the tooltip for the best of it's ability without overflowing in the screen, let's
+            show some examples:
+
+            This one is in the top left corner of the screen`,
+            tooltipAnchor: {
+                anchorId: 'anchor-1'
+            }
+        },
+        {
+            stepTitle: 'Automatic Anchoring 2',
+            stepDescription: `You will notice that not only the tooltip position will change, but also the tooltip arrow, 
+            it will automatically adjust for the best position avaliable for the anchor element`,
+            tooltipAnchor: {
+                anchorId: 'anchor-2'
             }
         },
         {

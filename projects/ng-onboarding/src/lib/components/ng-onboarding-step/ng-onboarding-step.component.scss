@@ -1,3 +1,5 @@
+@import "../../theme/theme.scss";
+
 :host {
     .backdrop,
     .click-blocker {
@@ -24,7 +26,7 @@
         position: fixed;
 
         .step-wrapper {
-            background: white;
+            background: whitesmoke;
             position: fixed;
             width: 400px;
             height: 240px;
@@ -35,7 +37,7 @@
 
             .pointer {
                 position: absolute;
-                fill: white;
+                fill: whitesmoke;
                 filter: drop-shadow(0px 2px 1px #00000014);
 
                 &.up,
@@ -88,32 +90,62 @@
                 }
             }
 
-            .step-close {
-                position: absolute;
-                right: 20px;
-                width: 24px;
-                height: 24px;
-                cursor: pointer;
+            .step-header {
+                display: flex;
+                justify-content: space-between;
+
+                svg {
+                    width: 30px;
+                    height: 30px;
+                    cursor: pointer;
+                }
+
+                .step-title {
+                    font-size: 24px;
+                    line-height: 26px;
+                    font-weight: bold;
+                }
             }
 
-            .step-title {
-                display: block;
-                font-size: 24px;
-                font-weight: bold;
-            }
+            .description-wrapper {
+                flex: 1;
+                overflow: auto;
+                margin: 10px 0px;
 
-            .step-description {
-                display: block;
-                font-size: 16px;
-                margin-top: 15px;
+                .step-description {
+                    display: block;
+                    font-size: 16px;
+                }
             }
 
             .step-footer {
                 position: relative;
-                flex: 1;
                 display: flex;
                 justify-content: flex-end;
                 align-items: flex-end;
+
+                button {
+                    margin: 0px;
+                    border-radius: 5px;
+                    padding: 10px;
+                    height: 42px;
+                    font-weight: bold;
+                    cursor: pointer;
+
+                    &.skip-button {
+                        color: mat-color($primary, default);
+                        border: 2px solid mat-color($primary, default);
+                        background: none;
+                        box-sizing: border-box;
+                    }
+
+                    &.next-button {
+                        color: whitesmoke;
+                        background: mat-color($primary, default);
+                        border: none;
+                        margin-left: 10px;
+                    }
+                }
 
                 .btn {
                     margin: 0px;

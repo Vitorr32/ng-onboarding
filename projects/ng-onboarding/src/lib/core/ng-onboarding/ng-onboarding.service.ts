@@ -10,6 +10,14 @@ import { QueueControllerService } from '../queue-controller/queue-controller.ser
 export class NgOnboardingService {
   private _configuration: Configuration = new Configuration();
   private _guideRepository: Onboarding[] = [];
+  private _injectedData: any;
+
+  public get injectedData(): any {
+    return this._injectedData;
+  }
+  public set injectedData(value: any) {
+    this._injectedData = value;
+  }
 
   public get configuration(): Configuration {
     return this._configuration;
@@ -30,13 +38,13 @@ export class NgOnboardingService {
     }
 
     const onboardingGuide = this.guideRepository[index];
-    const isTriggered = this.isGuideTriggerActive(onboardingGuide, injectedData);
+    const isTriggered = this.isGuideTriggerActive(onboardingGuide, injectedData || this.injectedData);
 
     if (!isTriggered) {
       throw Error(`The guide with identifier ${identifier} has a trigger that is not allowing the guide start`);
     }
 
-    this.queueController.addGuideToQueue.next({ onboarding: onboardingGuide, injectedData })
+    this.queueController.addGuideToQueue.next({ onboarding: onboardingGuide, injectedData: injectedData || this.injectedData })
   }
 
   public addGuideToRepository(newGuide: Onboarding): Onboarding[] {
@@ -54,28 +62,15 @@ export class NgOnboardingService {
     }
 
     this.addGuideToRepository(newGuide);
-    this.manuallyStartGuideInRepository(newGuide.identifier, injectedData);
+    this.manuallyStartGuideInRepository(newGuide.identifier, injectedData || this.injectedData);
   }
 
   public manuallyStartGuideInRepository(identifier: string, injectedData: any): void {
-    this.onActionTriggered(identifier, { ...injectedData, router: this.router });
-  }
-
-  // private automaticActionTriggerCheck(): void {
-  //   const triggeredGuides = this.onTriggerableActionDone({ router: this.router });
-
-  //   triggeredGuides.forEach(triggeredGuide => this.onActionTriggered(triggeredGuide.identifier));
-  // }
-
-  //Method that is called when the service detected a new action that could trigger the start of one of the onboarding guides
-  private onTriggerableActionDone(injectedData?: any): Onboarding[] {
-    return this.guideRepository.filter(
-      (onboardingGuide: Onboarding) => this.isGuideTriggerActive(onboardingGuide, injectedData)
-    )
+    this.onActionTriggered(identifier, { ...(injectedData || this.injectedData), router: this.router });
   }
 
   private isGuideTriggerActive(onboardingGuide: Onboarding, injectedData?: any): boolean {
-    return onboardingGuide.trigger ? onboardingGuide.trigger(injectedData) : true;
+    return onboardingGuide.trigger ? onboardingGuide.trigger(injectedData || this.injectedData) : true;
   }
 
   public updateConfiguration(config: Configuration): void {

@@ -20,6 +20,8 @@ export class NgOnboardingComponent implements OnInit, OnChanges {
   @Input()
   height?: number;
   @Input()
+  backdropColor?: string;
+  @Input()
   configuration?: Configuration;
 
   constructor(private onboardingService: NgOnboardingService, private guideProguession: GuideProgressionService) { }
@@ -31,15 +33,25 @@ export class NgOnboardingComponent implements OnInit, OnChanges {
       throw new Error('Ng onboarding intialized with no values in the repository input');
     }
 
+    if (this.injectedData) {
+      this.onboardingService.injectedData = this.injectedData;
+    }
+
     if (Array.isArray(this.repository)) {
       this.repository.forEach(guide => this.onboardingService.addGuideToRepository(guide));
     } else {
       this.onboardingService.directStartGuide(this.repository, this.injectedData);
     }
 
-    if (this.configuration) {
-      this.onboardingService.updateConfiguration(this.configuration);
-    }
+    const newConfiguration = this.configuration || new Configuration();
+
+    newConfiguration.tooltipDimensions.height = this.height;
+    newConfiguration.tooltipDimensions.width = this.width;
+    newConfiguration.backdropColor = this.backdropColor;
+
+    this.onboardingService.updateConfiguration(this.configuration);
+
+
   }
 
   ngOnChanges(changes: SimpleChanges) {

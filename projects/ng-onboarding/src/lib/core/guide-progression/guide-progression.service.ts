@@ -176,31 +176,42 @@ export class GuideProgressionService implements OnDestroy {
     const elementBoundingRect: DOMRect = element.getBoundingClientRect();
     const rawPosition: number[] = [elementBoundingRect.top, elementBoundingRect.left];
     const { width, height, _arrowRadius: arrowRadius } = this.onboardingService.configuration.tooltipDimensions;
-    let { direction, location } = step.pointer;
+    const autoArrowPosition: boolean = !step.pointer;
 
     const hasHorizontalOverflow: boolean = elementBoundingRect.left + width + arrowRadius > window.innerWidth;
     const hasVerticalOverflow: boolean = elementBoundingRect.top + height + elementBoundingRect.height + arrowRadius > window.innerHeight;
 
+    if (autoArrowPosition) {
+      step.pointer = {
+        direction: 'UP',
+        location: 'START'
+      }
+    }
+
     if (hasHorizontalOverflow && hasVerticalOverflow) {
-      direction = 'RIGHT';
-      location = 'END';
+      if (autoArrowPosition) {
+        step.pointer.direction = 'RIGHT';
+        step.pointer.location = 'END';
+      }
 
       rawPosition[0] -= height - 2 * arrowRadius;
       rawPosition[1] -= width + arrowRadius;
     } else if (hasHorizontalOverflow) {
-      direction = 'UP';
-      location = 'END';
+      if (autoArrowPosition) {
+        step.pointer.direction = 'UP';
+        step.pointer.location = 'END';
+      }
 
       rawPosition[0] += elementBoundingRect.height + arrowRadius;
       rawPosition[1] -= width - 2 * arrowRadius;
     } else if (hasVerticalOverflow) {
-      direction = 'DOWN';
-      location = 'START';
+      if (autoArrowPosition) {
+        step.pointer.direction = 'DOWN';
+        step.pointer.location = 'START';
+      }
 
       rawPosition[0] -= height + arrowRadius;
     } else {
-      direction = 'UP';
-      location = 'START';
       rawPosition[0] += elementBoundingRect.height + arrowRadius;
     }
 

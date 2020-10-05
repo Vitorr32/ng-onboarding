@@ -9,13 +9,11 @@ import ShowCaseRepository from '../respository/ShowcaseRepository';
 })
 export class AppComponent implements OnInit {
   title = 'ng-onboarding-showcase';
-  public showcaseRepository = ShowCaseRepository();
+  public startedGuide: boolean = false;
+  public showcaseRepository;
 
   public currentStepToShow: string = '';
-  public shouldRenderAnchorOfStep2: boolean = false;
-
   public toInjectData: any;
-
   public subjectToBeWaited: Subject<string> = new Subject<string>();
 
   constructor() {
@@ -23,13 +21,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.setInjectedDataToGuide();
-
     this.subjectToBeWaited.subscribe((stepExitCommand?: string) => {
-      switch (stepExitCommand) {
-        case 'step1exit':
-          this.onShowAsyncStepAnchor();
-      }
+      this.currentStepToShow = stepExitCommand;
     });
   }
 
@@ -40,11 +33,9 @@ export class AppComponent implements OnInit {
   }
 
   public onShowcaseStart(): void {
-
-  }
-
-  private onShowAsyncStepAnchor() {
-    setTimeout(() => this.shouldRenderAnchorOfStep2 = true, 5000);
+    this.setInjectedDataToGuide();
+    this.showcaseRepository = ShowCaseRepository();
+    this.startedGuide = true;
   }
 
   public shouldAddShowClassForAnchorDiv(anchorId: string): string {
