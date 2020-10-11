@@ -14,7 +14,7 @@ const ShowCaseRepository = (): Onboarding => ({
                 absolutePosition: ['calc(50% - 200px)', 'calc(50% - 200px)']
             },
             stepExit: async (injectedData: InjectedData) => {
-                injectedData.onStepExitSubject.next('anchor-2')
+                injectedData.onStepExitSubject.next('anchor-1')
             }
         },
         {
@@ -28,6 +28,9 @@ const ShowCaseRepository = (): Onboarding => ({
             This one is in the top left corner of the screen`,
             tooltipAnchor: {
                 anchorId: 'anchor-1'
+            },
+            stepExit: async (injectedData: InjectedData) => {
+                injectedData.onStepExitSubject.next('anchor-2')
             }
         },
         {
@@ -36,14 +39,28 @@ const ShowCaseRepository = (): Onboarding => ({
             it will automatically adjust for the best position avaliable for the anchor element`,
             tooltipAnchor: {
                 anchorId: 'anchor-2'
+            },
+            stepExit: async (injectedData: InjectedData) => {
+                injectedData.onStepExitSubject.next('anchor-3')
+            }
+        },
+        {
+            stepTitle: 'Automatic Anchoring 3',
+            stepDescription: `The toolip position and arrow will have the default position of 'UP' and 'START', but if 
+            there's a overflow of the tooltip position in relation of the screen size, it will change to a appropriate position`,
+            tooltipAnchor: {
+                anchorId: 'anchor-3'
+            },
+            stepExit: async (injectedData: InjectedData) => {
+                injectedData.onStepExitSubject.next('anchor-4')
             }
         },
         {
             stepTitle: 'Saw that? Asynchronous support!',
-            stepDescription: ` You can define asynchronous support for each different step so that the Ng Onboarding waits
+            stepDescription: `You can define asynchronous support for each different step so that the Ng Onboarding waits
             for the anchor element or subject to be done, making it easy to continue the guide after a call for API or similar is done`,
             tooltipAnchor: {
-                anchorId: 'step2-anchor'
+                anchorId: 'anchor-4'
             },
             asyncStep: {
                 blockActionsWhilePaused: true,

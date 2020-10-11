@@ -137,6 +137,7 @@ export class GuideProgressionService implements OnDestroy {
   }
 
   private onStepReadyToBeRendered(step: Step) {
+    console.log("Being Rendered...");
     const absolutePosition = this.getStepTooltipPosition(step);
     const guideProguess = this.getGuideProguessValues(step, this.currentOnboarding.steps);
 

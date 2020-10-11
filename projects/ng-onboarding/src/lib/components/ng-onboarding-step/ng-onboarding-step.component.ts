@@ -31,6 +31,7 @@ export class NgOnboardingStep implements OnInit, OnDestroy {
 
   private setListenerForOnStepReady() {
     this.onStepReadySubscription = this.guideProguession.onStepReady.subscribe(({ position, step, proguess }: StepRender) => {
+      console.log("Received new step from service");
 
       this.tooltipWrapperStyles = this.getStepStyle(position, this.ngOnboardingService.configuration.tooltipDimensions);
       this.pointerClass = this.getPointerClass(step);

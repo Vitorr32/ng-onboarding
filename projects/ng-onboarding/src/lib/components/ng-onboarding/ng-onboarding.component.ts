@@ -45,13 +45,11 @@ export class NgOnboardingComponent implements OnInit, OnChanges {
 
     const newConfiguration = this.configuration || new Configuration();
 
-    newConfiguration.tooltipDimensions.height = this.height;
-    newConfiguration.tooltipDimensions.width = this.width;
-    newConfiguration.backdropColor = this.backdropColor;
+    newConfiguration.tooltipDimensions.height = this.height || newConfiguration.tooltipDimensions.height;
+    newConfiguration.tooltipDimensions.width = this.width || newConfiguration.tooltipDimensions.width;
+    newConfiguration.backdropColor = this.backdropColor || newConfiguration.backdropColor;
 
     this.onboardingService.updateConfiguration(this.configuration);
-
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
