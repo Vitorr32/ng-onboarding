@@ -21,12 +21,24 @@ export class NgOnboardingStep implements OnInit, OnDestroy {
   public currentStep: Step;
 
   private onStepReadySubscription: Subscription;
+  private onGuideEndSubscription: Subscription;
 
   constructor(public guideProguession: GuideProgressionService, private ngOnboardingService: NgOnboardingService,
     private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
     this.setListenerForOnStepReady();
+    this.setListenerForOnGuideEnd();
+  }
+
+  private setListenerForOnGuideEnd() {
+    this.onGuideEndSubscription = this.guideProguession.onGuideFinish.subscribe(_ => {
+      this.tooltipWrapperStyles = null;
+      this.currentStep = null;
+      this.proguessReport = null;
+      this.pointerClass = null;
+      this.hasPointer = false;
+    })
   }
 
   private setListenerForOnStepReady() {
@@ -65,6 +77,10 @@ export class NgOnboardingStep implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.onStepReadySubscription) {
       this.onStepReadySubscription.unsubscribe();
+    }
+
+    if (this.onGuideEndSubscription) {
+      this.onGuideEndSubscription.unsubscribe();
     }
   }
 }

@@ -1,4 +1,5 @@
-import { Observable, Subject } from 'rxjs';
+import { EventEmitter } from '@angular/core';
+import { Subject } from 'rxjs';
 
 export class Step {
     stepIdentifier?: string;
@@ -22,6 +23,6 @@ export class Step {
     asyncStep?: {
         blockActionsWhilePaused?: boolean;
         maximumWaitTimeInMilliseconds?: number;
-        subjectToListen?: Subject<boolean>;
+        subjectToListen?: Subject<boolean> | EventEmitter<boolean>;
     };
 }

@@ -17,6 +17,7 @@ export class AppComponent implements OnInit {
   public currentStepToShow: string = '';
   public toInjectData: any;
   public subjectToBeWaited: Subject<string> = new Subject<string>();
+  public buttonClickSubject: Subject<boolean> = new Subject<boolean>();
   public steps: string[] = [
     'anchor-1', 'anchor-2', 'anchor-3', 'anchor-4'
   ]
@@ -48,7 +49,7 @@ export class AppComponent implements OnInit {
 
   public onShowcaseStart(): void {
     this.setInjectedDataToGuide();
-    this.showcaseRepository = ShowCaseRepository();
+    this.showcaseRepository = ShowCaseRepository(this.buttonClickSubject);
     this.startedGuide = true;
   }
 

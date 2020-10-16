@@ -1,7 +1,8 @@
+import { Subject } from 'rxjs';
 import { Onboarding } from '../../../ng-onboarding/src/lib/model/Onboarding.model';
 import { InjectedData } from '../model/InjectedData.model';
 
-const ShowCaseRepository = (): Onboarding => ({
+const ShowCaseRepository = (buttonSubject: Subject<boolean>): Onboarding => ({
     identifier: 'showcase-guide',
     steps: [
         {
@@ -56,7 +57,7 @@ const ShowCaseRepository = (): Onboarding => ({
             }
         },
         {
-            stepTitle: 'Saw that? Asynchronous support!',
+            stepTitle: 'Asynchronous support',
             stepDescription: `You can define asynchronous support for each different step so that the Ng Onboarding waits
             for the anchor element or subject to be done, making it easy to continue the guide after a call for API or similar is done`,
             tooltipAnchor: {
@@ -65,6 +66,23 @@ const ShowCaseRepository = (): Onboarding => ({
             asyncStep: {
                 blockActionsWhilePaused: true,
                 maximumWaitTimeInMilliseconds: 10000
+            },
+            stepExit: async (injectedData: InjectedData) => {
+                injectedData.onStepExitSubject.next('continue-button')
+            }
+        },
+        {
+            stepTitle: 'Asynchronous support 2',
+            stepDescription: `So in that way you can wait for the user to interact with a certain element (such as the button that appeared just now), before continuing the guide`,
+            tooltipAnchor: {
+                absolutePosition: ['calc(50% - 200px)', 'calc(50% - 200px)']
+            },
+            pointer: {
+                direction: 'NONE',
+            },
+            asyncStep: {
+                blockActionsWhilePaused: false,
+                subjectToListen: buttonSubject
             }
         }
     ],

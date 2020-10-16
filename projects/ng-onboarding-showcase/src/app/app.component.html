@@ -15,7 +15,9 @@
     <span>Doing a asynchronous task....</span>
   </div>
 
-  <button id="continue-button"> Click me to continue the Guide!</button>
+  <div *ngIf="showShowAnchorDiv('continue-button')" id="continue-button">
+    <button (click)="buttonClickSubject.next(true)"> Click me to continue the Guide!</button>
+  </div>
 </main>
 
 <div id="anchor-1" *ngIf="showShowAnchorDiv('anchor-1')" style="top: 10px;left: 10px;"

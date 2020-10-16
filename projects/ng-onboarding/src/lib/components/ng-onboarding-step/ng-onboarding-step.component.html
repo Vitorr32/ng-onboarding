@@ -1,6 +1,6 @@
-<ng-container *ngIf="!guideProguession.isPaused && guideProguession.currentStep">
+<ng-container *ngIf="!guideProguession.isPaused && currentStep">
     <div class="backdrop"></div>
-    <div class="click-blocker"></div>
+    <div class="click-blocker" *ngIf="currentStep.asyncStep && currentStep.asyncStep.blockActionsWhilePaused"></div>
 
     <div id="ng-onboarding-step">
         <div class="step-wrapper" [style]="tooltipWrapperStyles">

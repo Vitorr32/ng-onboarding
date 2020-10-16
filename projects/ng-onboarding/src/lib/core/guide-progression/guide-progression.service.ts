@@ -19,6 +19,7 @@ export class GuideProgressionService implements OnDestroy {
   public isPaused: boolean;
 
   public onStepReady: Subject<StepRender> = new Subject<StepRender>();
+  public onGuideFinish: Subject<any> = new Subject<any>();
   private onElementFound: Subject<HTMLElement> = new Subject<HTMLElement>();
 
   private onGuideStartSubscription: Subscription;
@@ -46,6 +47,7 @@ export class GuideProgressionService implements OnDestroy {
     const indexOfCurrentStep = this.currentOnboarding.steps.findIndex(step => step === this.currentStep);
     if (indexOfCurrentStep === this.currentOnboarding.steps.length - 1) {
       this.onGuideEnd();
+      return;
     }
 
     const nextStep = this.currentOnboarding.steps[indexOfCurrentStep + 1];
@@ -60,7 +62,7 @@ export class GuideProgressionService implements OnDestroy {
 
     if (readyToContinue) {
       this.currentStep = nextStep;
-      this.onStepReadyToBeRendered(this.currentStep);
+      setTimeout(() => this.onStepReadyToBeRendered(this.currentStep), 0)
       return nextStep;
     } else {
       return null;
@@ -72,6 +74,7 @@ export class GuideProgressionService implements OnDestroy {
       this.currentStep.stepExit(this.injectedData);
     }
 
+    this.onGuideFinish.next();
     this.queueControllerService.onGuideCompleted.next(this.currentGuide);
 
     this.currentGuide = null;
